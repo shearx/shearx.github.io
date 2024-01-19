@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SC Wiki Tool</title>
+    <link href="css/_reset.css" type="text/css" rel="stylesheet">
+    <link href="css/app.css" type="text/css" rel="stylesheet">
+    <script src="js/Template.js" type="text/javascript"></script>
+    <script src="js/MediaWikiAPI/MediaWikiAPI_Action.js" type="text/javascript"></script>
+    <script src="js/MediaWikiAPI/MediaWikiAPI_Format.js" type="text/javascript"></script>
+    <script src="js/MediaWikiAPI/MediaWikiAPI_List.js" type="text/javascript"></script>
+    <script src="js/MediaWikiAPI/MediaWikiAPI_Props.js" type="text/javascript"></script>
+    <script src="js/MediaWikiAPI/MediaWikiAPI_IIProps.js" type="text/javascript"></script>
+    <script src="js/MediaWikiAPI/MediaWikiAPI_Types.js" type="text/javascript"></script>
+    <script src="js/MediaWikiAPI/MediaWikiAPI.js" type="text/javascript"></script>
+    <script src="js/App.js" type="text/javascript"></script>
+</head>
+<body>
+    <div id="app">
+        <div id="page-controls">
+            <div class="page-control">
+                <div class="title">Category</div>
+                <div>
+                    <select name="q_category" title="Select Category" onchange="App.query_subcategories(this.value)">
+                        <option>Select a Category...</option>
+                        <option value="Category:Ships">Ships</option>
+                        <option value="Category:Personal_armor">Armor</option>
+                        <option value="Category:Clothing">Clothing</option>
+                        <option value="Category:Personal_weapons">FPS Weapons</option>
+                        <option value="Category:Ship_weapons">Ship Weapons</option>
+                        <option value="Category:Power_plants">Power Plants</option>
+                        <option value="Category:Shield_generators">Shield Generators</option>
+                        <option value="Category:Quantum_drives">Quantum Drives</option>
+                        <option value="Category:Coolers">Ship Coolers</option>
+                        <option value="Category:Missiles">Missiles</option>
+                        <option value="Category:Torpedoes">Torpedoes</option>
+                        <option value="Category:Gadgets">Gadgets</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="button" onclick="App.get_category_items(this)" value="Query Wiki">
+                </div>
+            </div>
+            <div class="page-control">
+                <div class="title">Sub-Category</div>
+                <div>
+                    <select name="q_subcategory" title="Select Sub-Category"></select>
+                </div>
+                <div>
+                    <input type="button" onclick="App.get_subcategory_items(this)" value="Query Wiki">
+                </div>
+            </div>
+
+        </div>
+        <div id="page-results">
+            <div id="results-table">
+                <div id="results-header">
+                    <div class="page-row">
+                        <div></div>
+                        <div>Image</div>
+                        <div>Name</div>
+                        <div>Category</div>
+                    </div>
+                </div>
+                <div id="results-body">
+                    <div class="page-row nosearch">
+                        <div>Select a Category and/or Subcategory to view items...</div>
+                    </div>
+                </div>
+                <div id="results-footer">
+                    <div class="page-row justify-center">
+                        <div>Information pulled from <a href="https://starcitizen.tools" title="StarCitizen.tools" target="_blank">http://starcitizen.tools</a> using the MediaWiki API</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
