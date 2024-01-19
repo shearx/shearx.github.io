@@ -42,6 +42,7 @@ body {
     grid-gap: var(--std-unit);
     padding: var(--std-unit);
     align-items: center;
+    flex-wrap: wrap;
 }
 
 #page-results {
