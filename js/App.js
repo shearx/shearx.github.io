@@ -1,12 +1,13 @@
 class App {
-    static IMAGE_PLACEHOLDER_URL = 'https://media.starcitizen.tools/9/93/Placeholderv2.png';
+    static IMAGE_PLACEHOLDER_URL = 'Placeholderv2.png';
 
     static IMAGE_BLACKLIST = [
         "File:RSIsite.svg",
         "File:RSItm.svg",
         "File:WikimediaUI-Globe.svg",
         "File:PHnav.svg",
-        "File:WikimediaUI-ArticleDisambiguation-ltr.svg"
+        "File:WikimediaUI-ArticleDisambiguation-ltr.svg",
+        "File:Placeholderv2.png"
     ];
     static clear_results() {
         const results_table = document.querySelector(`#page-results #results-body`);
@@ -70,15 +71,23 @@ class App {
         // query the wiki for images related to this pageid
         let images = await MediaWikiAPI.query({
             pageids: pageid,
-            prop: MediaWikiAPI_Props.IMAGES,
+            prop: MediaWikiAPI_Props.PAGE_IMAGE,
         }, "pages");
-        let _images = MediaWikiAPI.union_results(pageid, images, MediaWikiAPI_Props.IMAGES);
+        //let _result = MediaWikiAPI.union_results(pageid, images, MediaWikiAPI_Props."PAGE_IMAGE");
+        let _result = images[pageid] ?? [];
 
+        const file_name = _result['pageimage'] ?? App.IMAGE_PLACEHOLDER_URL;
+
+        imageEl.src = `${MediaWikiAPI.WIKI_URL}/Special:FilePath/${file_name}`;
+        imageEl.dataset['done'] = "";
+        /*
         // process images returned from query and add them to the row
         for(let i = 0; i < _images.images.length; i++) {
             // get image properties for this image, then query the wiki for more info about it, including its real URL
             let image_props = _images.images[i];
 
+
+            /*
             let image_info = await MediaWikiAPI.query({
                 prop: MediaWikiAPI_Props.IMAGE_INFO,
                 iiprop: `${MediaWikiAPI_IIProps.URL}|${MediaWikiAPI_IIProps.DIMENSIONS}`,
@@ -124,10 +133,12 @@ class App {
                 }
             }
 
+
             // if we got here, there were no valid images found; so let's add a placeholder instead
-            imageEl.src = App.IMAGE_PLACEHOLDER_URL;
+            imageEl.src = url_thumb || App.IMAGE_PLACEHOLDER_URL;
             imageEl.dataset['done'] = "";
         }
+        */
     }
 
     static async get_category_items(buttonElement) {

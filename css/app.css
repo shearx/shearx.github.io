@@ -54,7 +54,7 @@ body {
 #results-table {
     width: 100%;
     display: grid;
-    grid-template-rows: min-content 1fr 50px;
+    grid-template-rows: min-content 1fr min-content;
     height: 100%;
     overflow: hidden;
     grid-gap: var(--std-unit);
@@ -99,10 +99,12 @@ body {
     width: 50px;
 }
 .page-row > div {
-    width: auto;
+    width: min-content;
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .item-image {
