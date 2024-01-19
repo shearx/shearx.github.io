@@ -1,5 +1,5 @@
 class App {
-    static IMAGE_PLACEHOLDER_URL = 'Placeholderv2.png';
+    static IMAGE_PLACEHOLDER_URL = 'https://media.starcitizen.tools/9/93/Placeholderv2.png';;
 
     static IMAGE_BLACKLIST = [
         "File:RSIsite.svg",
@@ -67,6 +67,7 @@ class App {
      */
     static async load_images(pageid, row){
         const imageEl = row.querySelector(`img`);
+        imageEl.src = App.IMAGE_PLACEHOLDER_URL;
 
         // query the wiki for images related to this pageid
         let images = await MediaWikiAPI.query({
@@ -76,8 +77,7 @@ class App {
         //let _result = MediaWikiAPI.union_results(pageid, images, MediaWikiAPI_Props."PAGE_IMAGE");
         let _result = images[pageid] ?? [];
 
-
-        const file_name = _result['pageimage'] ?? App.IMAGE_PLACEHOLDER_URL;
+        const file_name = _result['pageimage'];
 
         let image_info = await MediaWikiAPI.query({
             prop: MediaWikiAPI_Props.IMAGE_INFO,
@@ -106,9 +106,11 @@ class App {
             let height = image_props.height;
             if (height > width)
                 imageEl.classList.add("portrait")
-            
+
             imageEl.src = url;
             imageEl.dataset['done'] = "";
+
+            return
         }
     }
 
