@@ -76,79 +76,40 @@ class App {
         //let _result = MediaWikiAPI.union_results(pageid, images, MediaWikiAPI_Props."PAGE_IMAGE");
         let _result = images[pageid] ?? [];
 
+
         const file_name = _result['pageimage'] ?? App.IMAGE_PLACEHOLDER_URL;
 
-        const img = new Image();
-        img.onload = () => {
-            imageEl.src = img.src;
+        let image_info = await MediaWikiAPI.query({
+            prop: MediaWikiAPI_Props.IMAGE_INFO,
+            iiprop: `${MediaWikiAPI_IIProps.URL}|${MediaWikiAPI_IIProps.DIMENSIONS}`,
+            titles: `File:${file_name}`
+        }, "pages");
 
-            let width = imageEl.clientWidth;
-            let height = imageEl.clientHeight;
+        image_info = MediaWikiAPI.union_results(pageid, image_info, MediaWikiAPI_Props.IMAGE_INFO);
+        if (!image_info || !image_info[MediaWikiAPI_Props.IMAGE_INFO])
+            return;
+
+        const image_props = image_info[MediaWikiAPI_Props.IMAGE_INFO][0];
+        const url = image_props.url;
+
+        let blacklisted = false;
+        // check if this image is blacklisted
+        for(let k = 0; k < App.IMAGE_BLACKLIST.length; k++) {
+            const blacklisted_file = App.IMAGE_BLACKLIST[k].split(":")[1];
+
+            const regex = new RegExp(`(${blacklisted_file})`);
+            if (regex.test(url))
+                blacklisted = true;
+        }
+        if (!blacklisted) {
+            let width = image_props.width;
+            let height = image_props.height;
             if (height > width)
-                imageEl.classList.add("portrait");
-
+                imageEl.classList.add("portrait")
+            
+            imageEl.src = url;
             imageEl.dataset['done'] = "";
         }
-
-        img.src = `${MediaWikiAPI.WIKI_URL}/Special:FilePath/${file_name}`;
-
-
-        /*
-        // process images returned from query and add them to the row
-        for(let i = 0; i < _images.images.length; i++) {
-            // get image properties for this image, then query the wiki for more info about it, including its real URL
-            let image_props = _images.images[i];
-
-
-            /*
-            let image_info = await MediaWikiAPI.query({
-                prop: MediaWikiAPI_Props.IMAGE_INFO,
-                iiprop: `${MediaWikiAPI_IIProps.URL}|${MediaWikiAPI_IIProps.DIMENSIONS}`,
-                titles: image_props.title
-            }, "pages");
-            image_info = MediaWikiAPI.union_results(pageid, image_info, MediaWikiAPI_Props.IMAGE_INFO);
-
-            // now, the results of the above query may refer to multiple different pages that are not the one we're starting from
-            // to compensate, we'll add each one to the row's images
-            // for debugging, only the first image is used
-            let done = false;
-            let index = 0;
-
-            let members = image_info[MediaWikiAPI_Props.IMAGE_INFO];
-            i = members.length;
-            while(members.length > 0) {
-                let image_props = members.shift();
-                console.log(image_props);
-
-                const url = image_props.url;
-                if (url) {
-
-                    let blacklisted = false;
-                    // check if this image is blacklisted
-                    for(let k = 0; k < App.IMAGE_BLACKLIST.length; k++) {
-                        const blacklisted_file = App.IMAGE_BLACKLIST[k].split(":")[1];
-
-                        const regex = new RegExp(`(${blacklisted_file})`);
-                        if (regex.test(url))
-                            blacklisted = true;
-                    }
-                    if (!blacklisted) {
-                        imageEl.src = url;
-                        imageEl.dataset['done'] = "";
-
-
-
-                        return;
-                    }
-                }
-            }
-
-
-            // if we got here, there were no valid images found; so let's add a placeholder instead
-            imageEl.src = url_thumb || App.IMAGE_PLACEHOLDER_URL;
-            imageEl.dataset['done'] = "";
-        }
-        */
     }
 
     static async get_category_items(buttonElement) {
@@ -257,7 +218,25 @@ class App {
 
         return results;
     }
-    static async get_page_images(item_props) {
 
+    // imgUrl: the image origin url
+    // callback: when the image is converted to base64, will call this function
+    // we can wrap this function to Promise-based
+    //  function convertImageToBase64Async(imagUrl) {
+    //     return new Promise(resovle => convertImageToBase64(imgUrl, resolve))
+    //  }
+    static convertImageToBase64(imgUrl, callback) {
+        const image = new Image();
+        image.crossOrigin='anonymous';
+        image.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.height = image.naturalHeight;
+            canvas.width = image.naturalWidth;
+            ctx.drawImage(image, 0, 0);
+            const dataUrl = canvas.toDataURL();
+            callback && callback(dataUrl)
+        }
+        image.src = imgUrl;
     }
 }
