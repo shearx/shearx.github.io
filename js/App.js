@@ -78,8 +78,21 @@ class App {
 
         const file_name = _result['pageimage'] ?? App.IMAGE_PLACEHOLDER_URL;
 
-        imageEl.src = `${MediaWikiAPI.WIKI_URL}/Special:FilePath/${file_name}`;
-        imageEl.dataset['done'] = "";
+        const img = new Image();
+        img.onload = () => {
+            imageEl.src = img.src;
+
+            let width = imageEl.clientWidth;
+            let height = imageEl.clientHeight;
+            if (height > width)
+                imageEl.classList.add("portrait");
+
+            imageEl.dataset['done'] = "";
+        }
+
+        img.src = `${MediaWikiAPI.WIKI_URL}/Special:FilePath/${file_name}`;
+
+
         /*
         // process images returned from query and add them to the row
         for(let i = 0; i < _images.images.length; i++) {
@@ -123,10 +136,7 @@ class App {
                         imageEl.src = url;
                         imageEl.dataset['done'] = "";
 
-                        let width = image_props.width;
-                        let height = image_props.height;
-                        if (height > width)
-                            imageEl.classList.add("portrait")
+
 
                         return;
                     }
